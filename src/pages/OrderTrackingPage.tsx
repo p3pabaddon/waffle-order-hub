@@ -59,8 +59,8 @@ const OrderTrackingPage = () => {
         {/* Status animation */}
         {order.status === "ready" && (
           <div className="text-center animate-scale-in">
-            <div className="w-24 h-24 mx-auto rounded-full bg-green-500/10 flex items-center justify-center mb-3">
-              <PartyPopper className="w-12 h-12 text-green-500 float-animation" />
+          <div className="w-24 h-24 mx-auto rounded-full bg-primary/10 flex items-center justify-center mb-3">
+              <PartyPopper className="w-12 h-12 text-primary float-animation" />
             </div>
             <h2 className="font-heading font-bold text-2xl text-foreground">Siparişiniz Hazır! 🎉</h2>
             <p className="text-muted-foreground mt-1">Tezgahtan alabilirsiniz</p>
