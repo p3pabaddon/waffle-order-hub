@@ -1,5 +1,7 @@
-import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
 import type { MenuItem } from "@/data/menuData";
+import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 
 export type OrderStatus = "received" | "preparing" | "almost-ready" | "ready";
 
@@ -10,13 +12,6 @@ export const statusLabels: Record<OrderStatus, string> = {
   ready: "Sipariş Hazır",
 };
 
-export const statusColors: Record<OrderStatus, string> = {
-  received: "bg-muted text-muted-foreground",
-  preparing: "bg-accent text-accent-foreground",
-  "almost-ready": "gradient-warm text-primary-foreground",
-  ready: "bg-green-500 text-primary-foreground",
-};
-
 export interface CartItem {
   item: MenuItem;
   quantity: number;
@@ -24,13 +19,14 @@ export interface CartItem {
 
 export interface Order {
   id: string;
+  orderCode: string;
   items: CartItem[];
   total: number;
   customerName: string;
   tableNumber: string;
   paymentMethod: "online" | "cash";
   status: OrderStatus;
-  createdAt: Date;
+  createdAt: string;
 }
 
 interface OrderContextType {
@@ -42,10 +38,11 @@ interface OrderContextType {
   clearCart: () => void;
   cartTotal: number;
   cartCount: number;
-  placeOrder: (customerName: string, tableNumber: string, paymentMethod: "online" | "cash") => string;
-  updateOrderStatus: (orderId: string, status: OrderStatus) => void;
-  getOrder: (orderId: string) => Order | undefined;
+  placeOrder: (customerName: string, tableNumber: string, paymentMethod: "online" | "cash") => Promise<string>;
+  updateOrderStatus: (orderCode: string, status: OrderStatus) => Promise<void>;
+  getOrder: (orderCode: string) => Order | undefined;
   newOrderFlag: number;
+  loadingOrders: boolean;
 }
 
 const OrderContext = createContext<OrderContextType | null>(null);
@@ -56,31 +53,71 @@ export const useOrders = () => {
   return ctx;
 };
 
+const mapDbOrder = (row: any): Order => ({
+  id: row.id,
+  orderCode: row.order_code,
+  items: (row.items as any[]) || [],
+  total: Number(row.total),
+  customerName: row.customer_name,
+  tableNumber: row.table_number,
+  paymentMethod: row.payment_method as "online" | "cash",
+  status: row.status as OrderStatus,
+  createdAt: row.created_at,
+});
+
 export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [newOrderFlag, setNewOrderFlag] = useState(0);
+  const [loadingOrders, setLoadingOrders] = useState(true);
+
+  // Load orders from DB
+  useEffect(() => {
+    const fetchOrders = async () => {
+      const { data } = await supabase
+        .from("orders")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(100);
+      if (data) setOrders(data.map(mapDbOrder));
+      setLoadingOrders(false);
+    };
+    fetchOrders();
+
+    // Real-time subscription
+    const channel = supabase
+      .channel("orders-realtime")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "orders" }, (payload) => {
+        setOrders((prev) => [mapDbOrder(payload.new), ...prev]);
+        setNewOrderFlag((f) => f + 1);
+      })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "orders" }, (payload) => {
+        setOrders((prev) =>
+          prev.map((o) => (o.id === payload.new.id ? mapDbOrder(payload.new) : o))
+        );
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const addToCart = useCallback((item: MenuItem) => {
-    setCart(prev => {
-      const existing = prev.find(c => c.item.id === item.id);
-      if (existing) {
-        return prev.map(c => c.item.id === item.id ? { ...c, quantity: c.quantity + 1 } : c);
-      }
+    setCart((prev) => {
+      const existing = prev.find((c) => c.item.id === item.id);
+      if (existing) return prev.map((c) => (c.item.id === item.id ? { ...c, quantity: c.quantity + 1 } : c));
       return [...prev, { item, quantity: 1 }];
     });
   }, []);
 
   const removeFromCart = useCallback((itemId: string) => {
-    setCart(prev => prev.filter(c => c.item.id !== itemId));
+    setCart((prev) => prev.filter((c) => c.item.id !== itemId));
   }, []);
 
   const updateQuantity = useCallback((itemId: string, quantity: number) => {
-    if (quantity <= 0) {
-      setCart(prev => prev.filter(c => c.item.id !== itemId));
-    } else {
-      setCart(prev => prev.map(c => c.item.id === itemId ? { ...c, quantity } : c));
-    }
+    if (quantity <= 0) setCart((prev) => prev.filter((c) => c.item.id !== itemId));
+    else setCart((prev) => prev.map((c) => (c.item.id === itemId ? { ...c, quantity } : c)));
   }, []);
 
   const clearCart = useCallback(() => setCart([]), []);
@@ -88,37 +125,45 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const cartTotal = cart.reduce((sum, c) => sum + c.item.price * c.quantity, 0);
   const cartCount = cart.reduce((sum, c) => sum + c.quantity, 0);
 
-  const placeOrder = useCallback((customerName: string, tableNumber: string, paymentMethod: "online" | "cash") => {
-    const id = `SIP-${Date.now().toString(36).toUpperCase()}`;
-    const order: Order = {
-      id,
-      items: [...cart],
-      total: cartTotal,
-      customerName,
-      tableNumber,
-      paymentMethod,
-      status: "received",
-      createdAt: new Date(),
-    };
-    setOrders(prev => [order, ...prev]);
-    setCart([]);
-    setNewOrderFlag(f => f + 1);
-    return id;
-  }, [cart, cartTotal]);
+  const placeOrder = useCallback(
+    async (customerName: string, tableNumber: string, paymentMethod: "online" | "cash") => {
+      const orderCode = `SIP-${Date.now().toString(36).toUpperCase()}`;
+      const cartItemsForDb = cart.map((c) => ({
+        item: { id: c.item.id, name: c.item.name, price: c.item.price, image: c.item.image },
+        quantity: c.quantity,
+      }));
 
-  const updateOrderStatus = useCallback((orderId: string, status: OrderStatus) => {
-    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status } : o));
+      await supabase.from("orders").insert({
+        order_code: orderCode,
+        customer_name: customerName,
+        table_number: tableNumber,
+        payment_method: paymentMethod,
+        total: cartTotal,
+        items: cartItemsForDb as unknown as Json,
+      });
+
+      setCart([]);
+      return orderCode;
+    },
+    [cart, cartTotal]
+  );
+
+  const updateOrderStatus = useCallback(async (orderCode: string, status: OrderStatus) => {
+    await supabase.from("orders").update({ status }).eq("order_code", orderCode);
   }, []);
 
-  const getOrder = useCallback((orderId: string) => {
-    return orders.find(o => o.id === orderId);
-  }, [orders]);
+  const getOrder = useCallback(
+    (orderCode: string) => orders.find((o) => o.orderCode === orderCode),
+    [orders]
+  );
 
   return (
-    <OrderContext.Provider value={{
-      cart, orders, addToCart, removeFromCart, updateQuantity, clearCart,
-      cartTotal, cartCount, placeOrder, updateOrderStatus, getOrder, newOrderFlag,
-    }}>
+    <OrderContext.Provider
+      value={{
+        cart, orders, addToCart, removeFromCart, updateQuantity, clearCart,
+        cartTotal, cartCount, placeOrder, updateOrderStatus, getOrder, newOrderFlag, loadingOrders,
+      }}
+    >
       {children}
     </OrderContext.Provider>
   );
