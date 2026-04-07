@@ -1,13 +1,15 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, CreditCard, Banknote, User, MapPin } from "lucide-react";
 import { useOrders } from "@/context/OrderContext";
 
 const CheckoutPage = () => {
   const { cart, cartTotal, placeOrder } = useOrders();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const tableFromQR = searchParams.get("table");
   const [name, setName] = useState("");
-  const [tableNumber, setTableNumber] = useState("");
+  const [tableNumber, setTableNumber] = useState(tableFromQR || "");
   const [paymentMethod, setPaymentMethod] = useState<"online" | "cash">("cash");
   const [cardNumber, setCardNumber] = useState("");
   const [cardExpiry, setCardExpiry] = useState("");
