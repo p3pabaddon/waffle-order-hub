@@ -11,6 +11,23 @@ import turkishTea from "@/assets/turkish-tea.jpg";
 import hotChocolate from "@/assets/hot-chocolate.jpg";
 import kunefe from "@/assets/kunefe.jpg";
 import brownie from "@/assets/brownie.jpg";
+import cappuccino from "@/assets/cappuccino.jpg";
+import turkishCoffee from "@/assets/turkish-coffee.jpg";
+import americano from "@/assets/americano.jpg";
+import herbalTea from "@/assets/herbal-tea.jpg";
+import winterTea from "@/assets/winter-tea.jpg";
+import icedChocolate from "@/assets/iced-chocolate.jpg";
+import milkshake from "@/assets/milkshake.jpg";
+import cheesecake from "@/assets/cheesecake.jpg";
+import nutellaSauce from "@/assets/nutella-sauce.jpg";
+import caramelSauce from "@/assets/caramel-sauce.jpg";
+import whiteChocoSauce from "@/assets/white-choco-sauce.jpg";
+import waffleChocoBanana from "@/assets/waffle-choco-banana.jpg";
+import waffleTatliEksi from "@/assets/waffle-tatli-eksi.jpg";
+import waffleFistikGecesi from "@/assets/waffle-fistik-gecesi.jpg";
+import waffleKlasikNutella from "@/assets/waffle-klasik-nutella.jpg";
+import waffleOrman from "@/assets/waffle-orman.jpg";
+import waffleKlasikChoco from "@/assets/waffle-klasik-choco.jpg";
 
 export type Category = "waffle-special" | "waffle-klasik" | "kahve" | "cay" | "soguk" | "tatli" | "sos";
 
@@ -35,7 +52,7 @@ export const categories: { id: Category; label: string; emoji: string }[] = [
 ];
 
 export const menuItems: MenuItem[] = [
-  // Waffle Special's (Shabby menüsünden)
+  // Waffle Special's
   {
     id: "ws1",
     name: "Çilek Rüyası",
@@ -59,7 +76,7 @@ export const menuItems: MenuItem[] = [
     name: "Çikolatalı Muzlu",
     description: "Sütlü Çikolata, Beyaz Çikolata, Muz, Oreo, Pirinç Patlağı, Yer Fıstığı",
     price: 199,
-    image: waffleNutella,
+    image: waffleChocoBanana,
     category: "waffle-special",
   },
   {
@@ -76,7 +93,7 @@ export const menuItems: MenuItem[] = [
     name: "Fıstık Gecesi",
     description: "Bitter Çikolata, Antep Fıstık Sos, Muz, Antep Fıstığı, Oreo",
     price: 199,
-    image: wafflePistachio,
+    image: waffleFistikGecesi,
     category: "waffle-special",
   },
   {
@@ -84,7 +101,7 @@ export const menuItems: MenuItem[] = [
     name: "Tatlı Ekşi",
     description: "Bitter Çikolata, Ruby Çikolata, Çilek, Hindistan Cevizi, Yer Fıstığı, Parti Süsleri",
     price: 199,
-    image: waffleBerry,
+    image: waffleTatliEksi,
     category: "waffle-special",
   },
   // Waffle Klasik
@@ -93,7 +110,7 @@ export const menuItems: MenuItem[] = [
     name: "Nutella & Muz Waffle",
     description: "Taze Belçika waffle'ı, bol Nutella ve dilimlenmiş muz ile",
     price: 139,
-    image: waffleNutella,
+    image: waffleKlasikNutella,
     category: "waffle-klasik",
   },
   {
@@ -101,7 +118,7 @@ export const menuItems: MenuItem[] = [
     name: "Orman Meyveli Waffle",
     description: "Çilek, yaban mersini, ahududu ve pudra şekeri ile",
     price: 149,
-    image: waffleBerry,
+    image: waffleOrman,
     category: "waffle-klasik",
   },
   {
@@ -109,7 +126,7 @@ export const menuItems: MenuItem[] = [
     name: "Klasik Çikolatalı Waffle",
     description: "Bitter çikolata sosu, çilek ve krema ile",
     price: 129,
-    image: heroWaffle,
+    image: waffleKlasikChoco,
     category: "waffle-klasik",
   },
   // Kahveler
@@ -127,7 +144,7 @@ export const menuItems: MenuItem[] = [
     name: "Cappuccino",
     description: "Eşit oranda espresso, süt ve süt köpüğü",
     price: 80,
-    image: coffeeLatte,
+    image: cappuccino,
     category: "kahve",
   },
   {
@@ -135,7 +152,7 @@ export const menuItems: MenuItem[] = [
     name: "Türk Kahvesi",
     description: "Geleneksel yöntemle pişirilmiş Türk kahvesi",
     price: 60,
-    image: coffeeLatte,
+    image: turkishCoffee,
     category: "kahve",
   },
   {
@@ -143,7 +160,7 @@ export const menuItems: MenuItem[] = [
     name: "Americano",
     description: "Çift shot espresso ve sıcak su",
     price: 70,
-    image: coffeeLatte,
+    image: americano,
     category: "kahve",
   },
   {
@@ -169,7 +186,7 @@ export const menuItems: MenuItem[] = [
     name: "Bitki Çayı",
     description: "Ihlamur, papatya veya adaçayı seçenekleri",
     price: 45,
-    image: turkishTea,
+    image: herbalTea,
     category: "cay",
   },
   {
@@ -177,7 +194,7 @@ export const menuItems: MenuItem[] = [
     name: "Kış Çayı",
     description: "Tarçın, karanfil, zencefil ve bal ile özel harman",
     price: 50,
-    image: turkishTea,
+    image: winterTea,
     category: "cay",
   },
   // Soğuk İçecekler
@@ -203,7 +220,7 @@ export const menuItems: MenuItem[] = [
     name: "Buzlu Çikolata",
     description: "Soğuk süt, çikolata sosu ve krema ile",
     price: 80,
-    image: icedCoffee,
+    image: icedChocolate,
     category: "soguk",
   },
   {
@@ -211,7 +228,7 @@ export const menuItems: MenuItem[] = [
     name: "Milkshake",
     description: "Çikolata, vanilya veya çilek aromalı",
     price: 85,
-    image: icedCoffee,
+    image: milkshake,
     category: "soguk",
   },
   // Tatlılar
@@ -237,7 +254,7 @@ export const menuItems: MenuItem[] = [
     name: "Cheesecake",
     description: "New York usulü cheesecake, orman meyveli sos ile",
     price: 100,
-    image: brownie,
+    image: cheesecake,
     category: "tatli",
   },
   // Ek Soslar
@@ -246,7 +263,7 @@ export const menuItems: MenuItem[] = [
     name: "Nutella Sos",
     description: "Ekstra Nutella çikolata sosu",
     price: 25,
-    image: heroWaffle,
+    image: nutellaSauce,
     category: "sos",
   },
   {
@@ -262,7 +279,7 @@ export const menuItems: MenuItem[] = [
     name: "Karamel Sos",
     description: "Ev yapımı karamel sos",
     price: 25,
-    image: waffleCaramel,
+    image: caramelSauce,
     category: "sos",
   },
   {
@@ -270,7 +287,7 @@ export const menuItems: MenuItem[] = [
     name: "Beyaz Çikolata Sos",
     description: "Kremalı beyaz çikolata sosu",
     price: 25,
-    image: waffleStrawberry,
+    image: whiteChocoSauce,
     category: "sos",
   },
 ];

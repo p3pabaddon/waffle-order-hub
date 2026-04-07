@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useOrders, statusLabels, type OrderStatus } from "@/context/OrderContext";
-import { Clock, ChefHat, Package, PartyPopper, Volume2, VolumeX, LogOut } from "lucide-react";
+import { Clock, ChefHat, Package, PartyPopper, Volume2, VolumeX, LogOut, QrCode, Settings, Save } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import AdminLogin from "@/components/AdminLogin";
+import { supabase } from "@/integrations/supabase/client";
 
 const statusFlow: OrderStatus[] = ["received", "preparing", "almost-ready", "ready"];
 
@@ -29,8 +31,12 @@ const AdminPage = () => {
   const { orders, updateOrderStatus, newOrderFlag, loadingOrders } = useOrders();
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [filter, setFilter] = useState<OrderStatus | "all">("all");
+  const [showSettings, setShowSettings] = useState(false);
+  const [newPin, setNewPin] = useState("");
+  const [pinSaved, setPinSaved] = useState(false);
   const prevOrderCount = useRef(orders.length);
   const audioCtxRef = useRef<AudioContext | null>(null);
+  const navigate = useNavigate();
 
   const playDing = () => {
     if (!soundEnabled) return;
@@ -62,7 +68,15 @@ const AdminPage = () => {
 
   const handleLogout = () => {
     sessionStorage.removeItem("cafe-admin-auth");
+    supabase.auth.signOut();
     setAuthenticated(false);
+  };
+
+  const handleSavePin = async () => {
+    if (!newPin || newPin.length < 4) return;
+    await supabase.from("settings").update({ value: newPin }).eq("key", "admin_pin");
+    setPinSaved(true);
+    setTimeout(() => { setPinSaved(false); setShowSettings(false); setNewPin(""); }, 1500);
   };
 
   const filtered = filter === "all" ? orders : orders.filter((o) => o.status === filter);
@@ -80,6 +94,14 @@ const AdminPage = () => {
             <p className="text-muted-foreground text-sm">{orders.length} toplam sipariş</p>
           </div>
           <div className="flex items-center gap-2">
+            <button onClick={() => navigate("/admin/qr")} title="QR Kodlar"
+              className="w-10 h-10 rounded-full bg-muted flex items-center justify-center hover:bg-secondary transition-colors">
+              <QrCode className="w-5 h-5 text-muted-foreground" />
+            </button>
+            <button onClick={() => setShowSettings(!showSettings)} title="Ayarlar"
+              className="w-10 h-10 rounded-full bg-muted flex items-center justify-center hover:bg-secondary transition-colors">
+              <Settings className="w-5 h-5 text-muted-foreground" />
+            </button>
             <button onClick={() => setSoundEnabled(!soundEnabled)}
               className="w-10 h-10 rounded-full bg-muted flex items-center justify-center hover:bg-secondary transition-colors">
               {soundEnabled ? <Volume2 className="w-5 h-5 text-primary" /> : <VolumeX className="w-5 h-5 text-muted-foreground" />}
@@ -91,6 +113,31 @@ const AdminPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Settings panel */}
+      {showSettings && (
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-4 animate-fade-in">
+          <div className="glass rounded-2xl p-5 space-y-4">
+            <h3 className="font-heading font-semibold text-foreground">⚙️ Ayarlar</h3>
+            <div className="flex gap-3 items-end">
+              <div className="flex-1">
+                <label className="text-sm text-muted-foreground font-heading mb-1 block">Admin PIN Kodunu Değiştir</label>
+                <input
+                  type="text"
+                  value={newPin}
+                  onChange={(e) => setNewPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  placeholder="Yeni PIN kodu (min 4 hane)"
+                  className="w-full px-4 py-3 rounded-xl bg-muted border border-border text-foreground placeholder:text-muted-foreground font-body focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+                />
+              </div>
+              <button onClick={handleSavePin} disabled={!newPin || newPin.length < 4}
+                className="gradient-warm text-primary-foreground px-4 py-3 rounded-xl font-heading font-medium text-sm flex items-center gap-2 hover:shadow-md hover:scale-105 active:scale-95 transition-all disabled:opacity-40">
+                {pinSaved ? "✓ Kaydedildi" : <><Save className="w-4 h-4" /> Kaydet</>}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4">
         <div className="flex gap-2 overflow-x-auto no-scrollbar">
