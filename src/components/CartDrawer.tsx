@@ -3,7 +3,11 @@ import { ShoppingCart, X, Minus, Plus, ArrowRight } from "lucide-react";
 import { useOrders } from "@/context/OrderContext";
 import { useNavigate } from "react-router-dom";
 
-const CartDrawer = () => {
+interface CartDrawerProps {
+  tableFromQR?: string | null;
+}
+
+const CartDrawer = ({ tableFromQR }: CartDrawerProps) => {
   const [open, setOpen] = useState(false);
   const { cart, cartTotal, cartCount, removeFromCart, updateQuantity } = useOrders();
   const navigate = useNavigate();
