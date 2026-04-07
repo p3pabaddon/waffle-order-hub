@@ -97,7 +97,7 @@ const MenuPage = () => {
         </div>
       </div>
 
-      <CartDrawer />
+      <CartDrawer tableFromQR={tableFromQR} />
     </div>
   );
 };
