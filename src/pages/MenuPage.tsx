@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { categories, menuItems } from "@/data/menuData";
 import MenuItemCard from "@/components/MenuItemCard";
 import CartDrawer from "@/components/CartDrawer";
@@ -6,6 +7,8 @@ import heroWaffle from "@/assets/hero-waffle.jpg";
 import cafeLogo from "@/assets/cafe-logo.png";
 
 const MenuPage = () => {
+  const [searchParams] = useSearchParams();
+  const tableFromQR = searchParams.get("table");
   const [activeCategory, setActiveCategory] = useState<string>("waffle-special");
   const [heroOffset, setHeroOffset] = useState(0);
   const categoryRefs = useRef<Record<string, HTMLDivElement | null>>({});
