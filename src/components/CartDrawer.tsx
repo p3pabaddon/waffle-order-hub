@@ -109,7 +109,7 @@ const CartDrawer = ({ tableFromQR }: CartDrawerProps) => {
               <button
                 onClick={() => {
                   setOpen(false);
-                  navigate("/checkout");
+                  navigate(tableFromQR ? `/checkout?table=${tableFromQR}` : "/checkout");
                 }}
                 className="w-full gradient-warm text-primary-foreground font-heading font-semibold py-4 rounded-xl flex items-center justify-center gap-2 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all"
               >
