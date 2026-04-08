@@ -152,6 +152,9 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   );
 
   const updateOrderStatus = useCallback(async (orderCode: string, status: OrderStatus) => {
+    setOrders((prev) =>
+      prev.map((o) => (o.orderCode === orderCode ? { ...o, status } : o))
+    );
     await supabase.from("orders").update({ status }).eq("order_code", orderCode);
   }, []);
 
