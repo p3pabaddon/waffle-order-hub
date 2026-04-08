@@ -177,7 +177,7 @@ const AdminPage = () => {
                     <div>
                       <p className="font-heading font-bold text-foreground text-sm">{order.orderCode}</p>
                       <p className="text-muted-foreground text-xs mt-0.5">
-                        {order.customerName} • {order.tableNumber === "Paket" ? "Paket" : `Masa ${order.tableNumber}`}
+                        {order.customerName} • 📞 {order.tableNumber}
                       </p>
                     </div>
                     <span className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-heading font-medium ${statusBadgeClasses[order.status]}`}>

@@ -15,6 +15,7 @@ export const statusLabels: Record<OrderStatus, string> = {
 export interface CartItem {
   item: MenuItem;
   quantity: number;
+  customizations?: string[];
 }
 
 export interface Order {
@@ -23,7 +24,7 @@ export interface Order {
   items: CartItem[];
   total: number;
   customerName: string;
-  tableNumber: string;
+  tableNumber: string; // now used for phone
   paymentMethod: "online" | "cash";
   status: OrderStatus;
   createdAt: string;
@@ -33,12 +34,13 @@ interface OrderContextType {
   cart: CartItem[];
   orders: Order[];
   addToCart: (item: MenuItem) => void;
+  addCustomToCart: (item: MenuItem, customizations: string[]) => void;
   removeFromCart: (itemId: string) => void;
   updateQuantity: (itemId: string, quantity: number) => void;
   clearCart: () => void;
   cartTotal: number;
   cartCount: number;
-  placeOrder: (customerName: string, tableNumber: string, paymentMethod: "online" | "cash") => Promise<string>;
+  placeOrder: (customerName: string, phone: string, paymentMethod: "online" | "cash") => Promise<string>;
   updateOrderStatus: (orderCode: string, status: OrderStatus) => Promise<void>;
   getOrder: (orderCode: string) => Order | undefined;
   newOrderFlag: number;
@@ -71,7 +73,6 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [newOrderFlag, setNewOrderFlag] = useState(0);
   const [loadingOrders, setLoadingOrders] = useState(true);
 
-  // Load orders from DB
   useEffect(() => {
     const fetchOrders = async () => {
       const { data } = await supabase
@@ -84,7 +85,6 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
     fetchOrders();
 
-    // Real-time subscription
     const channel = supabase
       .channel("orders-realtime")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "orders" }, (payload) => {
@@ -98,17 +98,19 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       })
       .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   const addToCart = useCallback((item: MenuItem) => {
     setCart((prev) => {
-      const existing = prev.find((c) => c.item.id === item.id);
-      if (existing) return prev.map((c) => (c.item.id === item.id ? { ...c, quantity: c.quantity + 1 } : c));
+      const existing = prev.find((c) => c.item.id === item.id && !c.customizations);
+      if (existing) return prev.map((c) => (c.item.id === item.id && !c.customizations ? { ...c, quantity: c.quantity + 1 } : c));
       return [...prev, { item, quantity: 1 }];
     });
+  }, []);
+
+  const addCustomToCart = useCallback((item: MenuItem, customizations: string[]) => {
+    setCart((prev) => [...prev, { item, quantity: 1, customizations }]);
   }, []);
 
   const removeFromCart = useCallback((itemId: string) => {
@@ -126,17 +128,18 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const cartCount = cart.reduce((sum, c) => sum + c.quantity, 0);
 
   const placeOrder = useCallback(
-    async (customerName: string, tableNumber: string, paymentMethod: "online" | "cash") => {
+    async (customerName: string, phone: string, paymentMethod: "online" | "cash") => {
       const orderCode = `SIP-${Date.now().toString(36).toUpperCase()}`;
       const cartItemsForDb = cart.map((c) => ({
         item: { id: c.item.id, name: c.item.name, price: c.item.price, image: c.item.image },
         quantity: c.quantity,
+        customizations: c.customizations || [],
       }));
 
       await supabase.from("orders").insert({
         order_code: orderCode,
         customer_name: customerName,
-        table_number: tableNumber,
+        table_number: phone, // storing phone in table_number field
         payment_method: paymentMethod,
         total: cartTotal,
         items: cartItemsForDb as unknown as Json,
@@ -160,7 +163,7 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   return (
     <OrderContext.Provider
       value={{
-        cart, orders, addToCart, removeFromCart, updateQuantity, clearCart,
+        cart, orders, addToCart, addCustomToCart, removeFromCart, updateQuantity, clearCart,
         cartTotal, cartCount, placeOrder, updateOrderStatus, getOrder, newOrderFlag, loadingOrders,
       }}
     >
