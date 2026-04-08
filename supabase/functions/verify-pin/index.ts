@@ -23,6 +23,7 @@ Deno.serve(async (req) => {
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
+    // Get the hashed PIN from settings
     const { data, error } = await supabase
       .from("settings")
       .select("value")
@@ -36,11 +37,18 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Verify using pgcrypto crypt comparison via RPC or direct SQL
-    const { data: result } = await supabase.rpc("verify_pin", {
+    // Verify PIN server-side using pgcrypto
+    const { data: result, error: rpcError } = await supabase.rpc("verify_pin", {
       _pin: pin,
       _hash: data.value,
     });
+
+    if (rpcError) {
+      return new Response(JSON.stringify({ valid: false }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500,
+      });
+    }
 
     return new Response(JSON.stringify({ valid: result === true }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
