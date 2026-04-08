@@ -107,6 +107,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      verify_pin: { Args: { _hash: string; _pin: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "staff"
