@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { categories, menuItems } from "@/data/menuData";
 import MenuItemCard from "@/components/MenuItemCard";
 import CartDrawer from "@/components/CartDrawer";
@@ -8,12 +8,34 @@ import cafeLogo from "@/assets/cafe-logo.png";
 const MenuPage = () => {
   const [activeCategory, setActiveCategory] = useState<string>("waffle-special");
   const [heroOffset, setHeroOffset] = useState(0);
+  const tabsRef = useRef<HTMLDivElement>(null);
+  const isDragging = useRef(false);
+  const startX = useRef(0);
+  const scrollLeft = useRef(0);
 
   useEffect(() => {
     const handleScroll = () => setHeroOffset(window.scrollY * 0.4);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Touch drag for category tabs
+  const handleTouchStart = (e: React.TouchEvent) => {
+    isDragging.current = true;
+    startX.current = e.touches[0].pageX - (tabsRef.current?.offsetLeft || 0);
+    scrollLeft.current = tabsRef.current?.scrollLeft || 0;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging.current || !tabsRef.current) return;
+    const x = e.touches[0].pageX - (tabsRef.current.offsetLeft || 0);
+    const walk = (x - startX.current) * 1.5;
+    tabsRef.current.scrollLeft = scrollLeft.current - walk;
+  };
+
+  const handleTouchEnd = () => {
+    isDragging.current = false;
+  };
 
   const filteredItems = menuItems.filter((item) => item.category === activeCategory);
 
@@ -45,9 +67,15 @@ const MenuPage = () => {
         </div>
       </div>
 
-      {/* Category tabs */}
+      {/* Category tabs - swipeable */}
       <div className="sticky top-0 z-40 glass-strong border-b border-border/50 px-2 py-2.5">
-        <div className="flex gap-1.5 overflow-x-auto no-scrollbar max-w-lg mx-auto pb-0.5">
+        <div
+          ref={tabsRef}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          className="flex gap-1.5 overflow-x-auto no-scrollbar max-w-lg mx-auto pb-0.5 touch-pan-x"
+        >
           {categories.map((cat) => (
             <button
               key={cat.id}

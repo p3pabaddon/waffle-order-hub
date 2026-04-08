@@ -8,7 +8,6 @@ import MenuPage from "./pages/MenuPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderTrackingPage from "./pages/OrderTrackingPage";
 import AdminPage from "./pages/AdminPage";
-import QRCodePage from "./pages/QRCodePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,7 +24,7 @@ const App = () => (
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/order/:orderId" element={<OrderTrackingPage />} />
             <Route path="/admin" element={<AdminPage />} />
-            <Route path="/admin/qr" element={<QRCodePage />} />
+            
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
