@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useOrders, statusLabels, type OrderStatus } from "@/context/OrderContext";
-import { Clock, ChefHat, Package, PartyPopper, Volume2, VolumeX, LogOut, QrCode, Settings, Save } from "lucide-react";
+import { Clock, ChefHat, Package, PartyPopper, Volume2, VolumeX, LogOut, Settings, Save, ChevronDown, ChevronUp } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AdminLogin from "@/components/AdminLogin";
 import { supabase } from "@/integrations/supabase/client";
@@ -34,6 +34,7 @@ const AdminPage = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [newPin, setNewPin] = useState("");
   const [pinSaved, setPinSaved] = useState(false);
+  const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
   const prevOrderCount = useRef(orders.length);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const navigate = useNavigate();
@@ -81,8 +82,13 @@ const AdminPage = () => {
 
   const filtered = filter === "all" ? orders : orders.filter((o) => o.status === filter);
 
-  const handleStatusUpdate = async (orderCode: string, status: OrderStatus) => {
+  const handleStatusUpdate = async (e: React.MouseEvent, orderCode: string, status: OrderStatus) => {
+    e.stopPropagation();
     await updateOrderStatus(orderCode, status);
+  };
+
+  const toggleExpand = (orderId: string) => {
+    setExpandedOrder(expandedOrder === orderId ? null : orderId);
   };
 
   return (
@@ -94,10 +100,6 @@ const AdminPage = () => {
             <p className="text-muted-foreground text-sm">{orders.length} toplam sipariş</p>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={() => navigate("/admin/qr")} title="QR Kodlar"
-              className="w-10 h-10 rounded-full bg-muted flex items-center justify-center hover:bg-secondary transition-colors">
-              <QrCode className="w-5 h-5 text-muted-foreground" />
-            </button>
             <button onClick={() => setShowSettings(!showSettings)} title="Ayarlar"
               className="w-10 h-10 rounded-full bg-muted flex items-center justify-center hover:bg-secondary transition-colors">
               <Settings className="w-5 h-5 text-muted-foreground" />
@@ -171,43 +173,83 @@ const AdminPage = () => {
             {filtered.map((order) => {
               const Icon = statusIcon[order.status];
               const next = nextStatus(order.status);
+              const isExpanded = expandedOrder === order.id;
               return (
-                <div key={order.id} className="glass rounded-2xl p-5 card-hover animate-fade-in">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <p className="font-heading font-bold text-foreground text-sm">{order.orderCode}</p>
-                      <p className="text-muted-foreground text-xs mt-0.5">
-                        {order.customerName} • 📞 {order.tableNumber}
-                      </p>
-                    </div>
-                    <span className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-heading font-medium ${statusBadgeClasses[order.status]}`}>
-                      <Icon className="w-3 h-3" />
-                      {statusLabels[order.status]}
-                    </span>
-                  </div>
-                  <div className="space-y-1 mb-3">
-                    {order.items.map((ci: any) => (
-                      <div key={ci.item.id} className="flex justify-between text-xs">
-                        <span className="text-foreground">{ci.quantity}x {ci.item.name}</span>
-                        <span className="text-muted-foreground">₺{ci.item.price * ci.quantity}</span>
+                <div
+                  key={order.id}
+                  className="glass rounded-2xl overflow-hidden card-hover animate-fade-in cursor-pointer active:scale-[0.98] transition-transform"
+                  onClick={() => toggleExpand(order.id)}
+                >
+                  {/* Header - always visible */}
+                  <div className="p-4 pb-3">
+                    <div className="flex items-start justify-between mb-1">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-heading font-bold text-foreground text-sm">{order.orderCode}</p>
+                        <p className="text-muted-foreground text-xs mt-0.5 truncate">
+                          {order.customerName} • 📞 {order.tableNumber}
+                        </p>
                       </div>
-                    ))}
-                  </div>
-                  <div className="border-t border-border pt-3 flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">
-                      {order.paymentMethod === "online" ? "💳 Online" : "💵 Nakit"} • <span className="font-semibold text-foreground">₺{order.total}</span>
-                    </span>
-                    {next ? (
-                      <button onClick={() => handleStatusUpdate(order.orderCode, next)}
-                        className="gradient-warm text-primary-foreground text-xs font-heading font-medium px-3 py-1.5 rounded-lg hover:shadow-md hover:scale-105 active:scale-95 transition-all">
-                        → {statusLabels[next]}
-                      </button>
-                    ) : (
-                      <span className="text-primary font-heading font-medium text-xs flex items-center gap-1">
-                        <PartyPopper className="w-3.5 h-3.5" /> Tamamlandı
+                      <span className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-heading font-medium flex-shrink-0 ${statusBadgeClasses[order.status]}`}>
+                        <Icon className="w-3 h-3" />
+                        {statusLabels[order.status]}
                       </span>
-                    )}
+                    </div>
+
+                    {/* Summary line */}
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {order.items.length} ürün • <span className="font-semibold text-foreground">₺{order.total}</span>
+                    </p>
+
+                    {/* Expand indicator */}
+                    <div className="flex items-center justify-center mt-2">
+                      {isExpanded ? (
+                        <ChevronUp className="w-4 h-4 text-muted-foreground" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                      )}
+                    </div>
                   </div>
+
+                  {/* Expanded content */}
+                  {isExpanded && (
+                    <div className="px-4 pb-4 border-t border-border/50 pt-3 animate-fade-in">
+                      <div className="space-y-2 mb-3">
+                        {order.items.map((ci: any, idx: number) => (
+                          <div key={idx} className="bg-muted/50 rounded-lg p-2.5">
+                            <div className="flex justify-between text-xs">
+                              <span className="text-foreground font-medium">{ci.quantity}x {ci.item.name}</span>
+                              <span className="text-muted-foreground">₺{ci.item.price * ci.quantity}</span>
+                            </div>
+                            {/* Show customizations for Kendin Yarat */}
+                            {ci.customizations && ci.customizations.length > 0 && (
+                              <div className="mt-1.5 flex flex-wrap gap-1">
+                                {ci.customizations.map((c: string, i: number) => (
+                                  <span key={i} className="inline-block bg-accent/20 text-foreground text-[10px] px-2 py-0.5 rounded-full">
+                                    {c}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                      <div className="border-t border-border pt-3 flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">
+                          {order.paymentMethod === "online" ? "💳 Online" : "💵 Nakit"} • <span className="font-semibold text-foreground">₺{order.total}</span>
+                        </span>
+                        {next ? (
+                          <button onClick={(e) => handleStatusUpdate(e, order.orderCode, next)}
+                            className="gradient-warm text-primary-foreground text-xs font-heading font-medium px-3 py-1.5 rounded-lg hover:shadow-md hover:scale-105 active:scale-95 transition-all">
+                            → {statusLabels[next]}
+                          </button>
+                        ) : (
+                          <span className="text-primary font-heading font-medium text-xs flex items-center gap-1">
+                            <PartyPopper className="w-3.5 h-3.5" /> Tamamlandı
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })}

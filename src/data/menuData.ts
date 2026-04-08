@@ -26,6 +26,22 @@ import nutellaSauce from "@/assets/nutella-sauce.jpg";
 import caramelSauce from "@/assets/caramel-sauce.jpg";
 import whiteChocoSauce from "@/assets/white-choco-sauce.jpg";
 import heroWaffle from "@/assets/hero-waffle.jpg";
+// Breakfast images
+import serpmeKahvalti from "@/assets/serpme-kahvalti.jpg";
+import menemen from "@/assets/menemen.jpg";
+import tost from "@/assets/tost.jpg";
+import sahandaYumurta from "@/assets/sahanda-yumurta.jpg";
+import peynirTabagi from "@/assets/peynir-tabagi.jpg";
+import balKaymak from "@/assets/bal-kaymak.jpg";
+import pisi from "@/assets/pisi.jpg";
+import kuymak from "@/assets/kuymak.jpg";
+import sogusTabagi from "@/assets/sogus-tabagi.jpg";
+import simit from "@/assets/simit.jpg";
+import omlet from "@/assets/omlet.jpg";
+// Starter images
+import patatesTava from "@/assets/patates-tava.jpg";
+import sicakTabagi from "@/assets/sicak-tabagi.jpg";
+import gozleme from "@/assets/gozleme.jpg";
 
 export type Category =
   | "waffle-special"
@@ -80,14 +96,12 @@ export interface CustomizationOption {
 }
 
 export const customizationOptions: CustomizationOption[] = [
-  // Meyveler (2 adet seçilebilir)
   { id: "fruit-cilek", name: "Çilek", category: "meyve" },
   { id: "fruit-muz", name: "Muz", category: "meyve" },
   { id: "fruit-frambuaz", name: "Frambuaz", category: "meyve" },
   { id: "fruit-yaban-mersini", name: "Yaban Mersini", category: "meyve" },
   { id: "fruit-kivi", name: "Kivi", category: "meyve" },
   { id: "fruit-ananas", name: "Ananas", category: "meyve" },
-  // Çikolatalar (sınırsız)
   { id: "choco-sutlu", name: "Sütlü Çikolata", category: "cikolata" },
   { id: "choco-bitter", name: "Bitter Çikolata", category: "cikolata" },
   { id: "choco-beyaz", name: "Beyaz Çikolata", category: "cikolata" },
@@ -95,7 +109,6 @@ export const customizationOptions: CustomizationOption[] = [
   { id: "choco-nutella", name: "Nutella", category: "cikolata" },
   { id: "choco-karamel", name: "Karamel", category: "cikolata" },
   { id: "choco-fistik-sos", name: "Antep Fıstık Sos", category: "cikolata" },
-  // Süslemeler (sınırsız)
   { id: "top-antep", name: "Antep Fıstığı", category: "susleme" },
   { id: "top-yer-fistigi", name: "Yer Fıstığı", category: "susleme" },
   { id: "top-hindistan", name: "Hindistan Cevizi", category: "susleme" },
@@ -171,102 +184,100 @@ export const menuItems: MenuItem[] = [
     id: "ky1", name: "Kendin Yarat - Tabakta",
     description: "Tabakta servis edilir. 2 adet meyve, sınırsız çikolata ve sınırsız süsleme seçebilirsiniz.",
     price: 250, image: heroWaffle, category: "kendin-yarat", popular: true,
-    isCustomizable: true,
-    ingredients: [],
+    isCustomizable: true, ingredients: [],
   },
   {
     id: "ky2", name: "Kendin Yarat - Kovada",
     description: "Kovada servis edilir. 2 adet meyve, sınırsız çikolata ve sınırsız süsleme seçebilirsiniz.",
     price: 250, image: heroWaffle, category: "kendin-yarat",
-    isCustomizable: true,
-    ingredients: [],
+    isCustomizable: true, ingredients: [],
   },
 
   // === KAHVALTI ===
   {
     id: "kv1", name: "Serpme Kahvaltı (2 kişilik)",
     description: "Ezine beyaz peynir, Çeçil peyniri, Taze kaşar, Misket peynir, Jambon, Çikolatalı fındık kreması, Mevsim reçeli, Bal, Kaymak, Acuka, Zeytinler, Portakal, Patates kızartması, Sucuk şiş, Hellim şiş, Sigara böreği, Pişi, Soğan halkası, Salçalı sosis, Omlet, Simit, Ekmek ve Sınırsız çay",
-    price: 1249, image: heroWaffle, category: "kahvalti", popular: true,
+    price: 1249, image: serpmeKahvalti, category: "kahvalti", popular: true,
     ingredients: ["Ezine Beyaz Peynir", "Çeçil Peyniri", "Taze Kaşar", "Misket Peynir", "Jambon", "Çikolatalı Fındık Kreması", "Mevsim Reçeli", "Bal", "Kaymak", "Acuka", "Siyah Zeytin", "Yeşil Zeytin", "Patates Kızartması", "Sucuk Şiş", "Hellim Şiş", "Sigara Böreği", "Pişi", "Soğan Halkası", "Salçalı Sosis", "Omlet", "Simit", "Ekmek", "Sınırsız Çay"],
   },
   {
     id: "kv2", name: "Hızlı Kahvaltı",
     description: "Beyaz peynir, Çeçil peyniri, Kaşar, Misket, Jambon, Zeytin, Söğüş, Çikolatalı fındık kreması, Reçel, Patates kızartması, Omlet, Sucuk hellim şiş, Sigara böreği, Soğan halkası ve Çay",
-    price: 549, image: heroWaffle, category: "kahvalti",
+    price: 549, image: serpmeKahvalti, category: "kahvalti",
     ingredients: ["Beyaz Peynir", "Çeçil Peyniri", "Kaşar Peyniri", "Misket Peynir", "Dana Jambon", "Zeytin", "Söğüş", "Çikolatalı Fındık Kreması", "Reçel", "Patates Kızartması", "Omlet", "Sucuk Hellim Şiş", "Sigara Böreği", "Soğan Halkası", "Çay"],
   },
   {
     id: "kv3", name: "Peynir Tabağı",
     description: "Beyaz peynir, Kaşar peyniri, Çeçil peyniri, Misket peynir, Dana jambon, Kuru üzüm",
-    price: 249, image: heroWaffle, category: "kahvalti",
+    price: 249, image: peynirTabagi, category: "kahvalti",
     ingredients: ["Beyaz Peynir", "Kaşar Peyniri", "Çeçil Peyniri", "Misket Peynir", "Dana Jambon", "Kuru Üzüm"],
   },
   {
     id: "kv4", name: "Söğüş Tabağı",
     description: "Domates, Salatalık, Köy biberi, Kıvırcık, Maydonoz",
-    price: 209, image: heroWaffle, category: "kahvalti",
+    price: 209, image: sogusTabagi, category: "kahvalti",
     ingredients: ["Domates", "Salatalık", "Köy Biberi", "Kıvırcık", "Maydonoz"],
   },
-  { id: "kv5", name: "Bal Kaymak", description: "Taze bal ve kaymak", price: 149, image: heroWaffle, category: "kahvalti" },
-  { id: "kv6", name: "Pişi Tabağı", description: "4 adet pişi", price: 199, image: heroWaffle, category: "kahvalti" },
-  { id: "kv7", name: "Klasik Menemen", description: "Geleneksel menemen", price: 249, image: heroWaffle, category: "kahvalti" },
-  { id: "kv8", name: "Peynirli Menemen", description: "Peynirli menemen", price: 259, image: heroWaffle, category: "kahvalti" },
-  { id: "kv9", name: "Cheddarlı Menemen", description: "Cheddar peynirli menemen", price: 269, image: heroWaffle, category: "kahvalti" },
-  { id: "kv10", name: "Sucuklu Menemen", description: "Sucuklu menemen", price: 269, image: heroWaffle, category: "kahvalti" },
-  { id: "kv11", name: "Kavurmalı Menemen", description: "Kavurmalı menemen", price: 349, image: heroWaffle, category: "kahvalti" },
-  { id: "kv12", name: "Karışık Menemen", description: "Sucuklu ve Kaşarlı", price: 299, image: heroWaffle, category: "kahvalti" },
-  { id: "kv13", name: "Salçalı Sosis", description: "Salçalı sosis tabağı", price: 209, image: heroWaffle, category: "kahvalti" },
-  { id: "kv14", name: "Sade Omlet", description: "Sade omlet", price: 189, image: heroWaffle, category: "kahvalti" },
-  { id: "kv15", name: "Peynirli Omlet", description: "Peynirli omlet", price: 199, image: heroWaffle, category: "kahvalti" },
-  { id: "kv16", name: "Veggie Omlet", description: "Sebzeli omlet", price: 189, image: heroWaffle, category: "kahvalti" },
-  { id: "kv17", name: "Scrambled Egg", description: "Çırpılmış yumurta", price: 189, image: heroWaffle, category: "kahvalti" },
-  { id: "kv18", name: "Sahanda Yumurta", description: "Sahanda yumurta", price: 189, image: heroWaffle, category: "kahvalti" },
-  { id: "kv19", name: "Sahanda Sucuk", description: "Sahanda sucuk", price: 239, image: heroWaffle, category: "kahvalti" },
-  { id: "kv20", name: "Sucuklu Yumurta", description: "Sucuklu yumurta", price: 249, image: heroWaffle, category: "kahvalti" },
-  { id: "kv21", name: "Kavurmalı Yumurta", description: "Kavurmalı yumurta", price: 299, image: heroWaffle, category: "kahvalti" },
-  { id: "kv22", name: "Kaşarlı Tost", description: "Kaşarlı tost", price: 229, image: heroWaffle, category: "kahvalti" },
-  { id: "kv23", name: "Kavurmalı Kaşarlı Tost", description: "Kavurmalı ve kaşarlı tost", price: 279, image: heroWaffle, category: "kahvalti" },
-  { id: "kv24", name: "Karışık Tost", description: "Karışık tost", price: 259, image: heroWaffle, category: "kahvalti" },
+  { id: "kv5", name: "Bal Kaymak", description: "Taze bal ve kaymak", price: 149, image: balKaymak, category: "kahvalti" },
+  { id: "kv6", name: "Pişi Tabağı", description: "4 adet pişi", price: 199, image: pisi, category: "kahvalti" },
+  { id: "kv7", name: "Klasik Menemen", description: "Geleneksel menemen", price: 249, image: menemen, category: "kahvalti" },
+  { id: "kv8", name: "Peynirli Menemen", description: "Peynirli menemen", price: 259, image: menemen, category: "kahvalti" },
+  { id: "kv9", name: "Cheddarlı Menemen", description: "Cheddar peynirli menemen", price: 269, image: menemen, category: "kahvalti" },
+  { id: "kv10", name: "Sucuklu Menemen", description: "Sucuklu menemen", price: 269, image: menemen, category: "kahvalti" },
+  { id: "kv11", name: "Kavurmalı Menemen", description: "Kavurmalı menemen", price: 349, image: menemen, category: "kahvalti" },
+  { id: "kv12", name: "Karışık Menemen", description: "Sucuklu ve Kaşarlı", price: 299, image: menemen, category: "kahvalti" },
+  { id: "kv13", name: "Salçalı Sosis", description: "Salçalı sosis tabağı", price: 209, image: sahandaYumurta, category: "kahvalti" },
+  { id: "kv14", name: "Sade Omlet", description: "Sade omlet", price: 189, image: omlet, category: "kahvalti" },
+  { id: "kv15", name: "Peynirli Omlet", description: "Peynirli omlet", price: 199, image: omlet, category: "kahvalti" },
+  { id: "kv16", name: "Veggie Omlet", description: "Sebzeli omlet", price: 189, image: omlet, category: "kahvalti" },
+  { id: "kv17", name: "Scrambled Egg", description: "Çırpılmış yumurta", price: 189, image: omlet, category: "kahvalti" },
+  { id: "kv18", name: "Sahanda Yumurta", description: "Sahanda yumurta", price: 189, image: sahandaYumurta, category: "kahvalti" },
+  { id: "kv19", name: "Sahanda Sucuk", description: "Sahanda sucuk", price: 239, image: sahandaYumurta, category: "kahvalti" },
+  { id: "kv20", name: "Sucuklu Yumurta", description: "Sucuklu yumurta", price: 249, image: sahandaYumurta, category: "kahvalti" },
+  { id: "kv21", name: "Kavurmalı Yumurta", description: "Kavurmalı yumurta", price: 299, image: sahandaYumurta, category: "kahvalti" },
+  { id: "kv22", name: "Kaşarlı Tost", description: "Kaşarlı tost", price: 229, image: tost, category: "kahvalti" },
+  { id: "kv23", name: "Kavurmalı Kaşarlı Tost", description: "Kavurmalı ve kaşarlı tost", price: 279, image: tost, category: "kahvalti" },
+  { id: "kv24", name: "Karışık Tost", description: "Karışık tost", price: 259, image: tost, category: "kahvalti" },
   {
     id: "kv25", name: "Shabby Tost",
     description: "Yumurta, Panco, Cheddar, Patates",
-    price: 289, image: heroWaffle, category: "kahvalti",
+    price: 289, image: tost, category: "kahvalti",
     ingredients: ["Yumurta", "Panco", "Cheddar", "Patates"],
   },
-  { id: "kv26", name: "Kuymak", description: "Geleneksel kuymak", price: 299, image: heroWaffle, category: "kahvalti" },
-  { id: "kv27", name: "Simit", description: "Simit", price: 39, image: heroWaffle, category: "kahvalti" },
+  { id: "kv26", name: "Kuymak", description: "Geleneksel kuymak", price: 299, image: kuymak, category: "kahvalti" },
+  { id: "kv27", name: "Simit", description: "Simit", price: 39, image: simit, category: "kahvalti" },
 
   // === BAŞLANGIÇLAR ===
-  { id: "bs1", name: "Patates Tava", description: "Klasik patates kızartması", price: 189, image: heroWaffle, category: "baslangic" },
-  { id: "bs2", name: "Patates Tava (Cajun Baharatlı)", description: "Cajun baharatlı patates kızartması", price: 190, image: heroWaffle, category: "baslangic" },
+  { id: "bs1", name: "Patates Tava", description: "Klasik patates kızartması", price: 189, image: patatesTava, category: "baslangic" },
+  { id: "bs2", name: "Patates Tava (Cajun Baharatlı)", description: "Cajun baharatlı patates kızartması", price: 190, image: patatesTava, category: "baslangic" },
   {
     id: "bs3", name: "Trüflü Patates Tava",
     description: "Parmesan ile birlikte servis edilmektedir",
-    price: 199, image: heroWaffle, category: "baslangic",
+    price: 199, image: patatesTava, category: "baslangic",
     ingredients: ["Patates", "Trüf Yağı", "Parmesan"],
   },
   {
     id: "bs4", name: "Börek Tabağı",
     description: "Sigara böreği (4 Adet), Pişi (2 Adet), ve Patates kızartması ile birlikte",
-    price: 229, image: heroWaffle, category: "baslangic",
+    price: 229, image: sicakTabagi, category: "baslangic",
     ingredients: ["Sigara Böreği", "Pişi", "Patates Kızartması"],
   },
   {
     id: "bs5", name: "Sıcak Tabağı",
     description: "Patates kızartması, Soğan halkası, Sigara böreği, Sucuk hellim şiş, Pişi",
-    price: 299, image: heroWaffle, category: "baslangic",
+    price: 299, image: sicakTabagi, category: "baslangic",
     ingredients: ["Patates Kızartması", "Soğan Halkası", "Sigara Böreği", "Sucuk Hellim Şiş", "Pişi"],
   },
   {
     id: "bs6", name: "Sosis Tabağı",
     description: "Patates kızartması ile servis edilir",
-    price: 229, image: heroWaffle, category: "baslangic",
+    price: 229, image: sicakTabagi, category: "baslangic",
   },
-  { id: "bs7", name: "Patatesli Gözleme", description: "Domates, Salatalık ve Yeşillik ile birlikte", price: 249, image: heroWaffle, category: "baslangic" },
-  { id: "bs8", name: "Patatesli Kaşarlı Gözleme", description: "Domates, Salatalık ve Yeşillik ile birlikte", price: 259, image: heroWaffle, category: "baslangic" },
-  { id: "bs9", name: "Beyaz Peynirli Gözleme", description: "Domates, Salatalık ve Yeşillik ile birlikte", price: 229, image: heroWaffle, category: "baslangic" },
-  { id: "bs10", name: "Kaşarlı Gözleme", description: "Domates, Salatalık ve Yeşillik ile birlikte", price: 229, image: heroWaffle, category: "baslangic" },
-  { id: "bs11", name: "Karışık Gözleme", description: "Sucuk ve kaşarlı. Domates, Salatalık ve Yeşillik ile birlikte", price: 279, image: heroWaffle, category: "baslangic" },
+  { id: "bs7", name: "Patatesli Gözleme", description: "Domates, Salatalık ve Yeşillik ile birlikte", price: 249, image: gozleme, category: "baslangic" },
+  { id: "bs8", name: "Patatesli Kaşarlı Gözleme", description: "Domates, Salatalık ve Yeşillik ile birlikte", price: 259, image: gozleme, category: "baslangic" },
+  { id: "bs9", name: "Beyaz Peynirli Gözleme", description: "Domates, Salatalık ve Yeşillik ile birlikte", price: 229, image: gozleme, category: "baslangic" },
+  { id: "bs10", name: "Kaşarlı Gözleme", description: "Domates, Salatalık ve Yeşillik ile birlikte", price: 229, image: gozleme, category: "baslangic" },
+  { id: "bs11", name: "Karışık Gözleme", description: "Sucuk ve kaşarlı. Domates, Salatalık ve Yeşillik ile birlikte", price: 279, image: gozleme, category: "baslangic" },
 
   // === SICAK İÇECEKLER ===
   { id: "si1", name: "Demleme Çay", description: "Geleneksel demleme çay", price: 49, image: turkishTea, category: "sicak-icecek", popular: true },
@@ -327,17 +338,17 @@ export const menuItems: MenuItem[] = [
   { id: "fk5", name: "Fresh Black Mulberry", description: "Karadut, Sprite, Limon", price: 129, image: lemonade, category: "kokteyl" },
 
   // === MEŞRUBATLAR ===
-  { id: "mr1", name: "Su", description: "Su", price: 39, image: heroWaffle, category: "mesrubat" },
-  { id: "mr2", name: "Soda", description: "Soda", price: 59, image: heroWaffle, category: "mesrubat" },
-  { id: "mr3", name: "İtalyan Soda", description: "Misket Limon, Çilek, Karadut, Blue Curaçao, Mango, Çarkıfelek Meyvesi", price: 89, image: heroWaffle, category: "mesrubat" },
-  { id: "mr4", name: "Churchill", description: "Churchill", price: 75, image: heroWaffle, category: "mesrubat" },
-  { id: "mr5", name: "Pepsi Cola", description: "Pepsi max (sıfır şeker)", price: 75, image: heroWaffle, category: "mesrubat" },
-  { id: "mr6", name: "Yedigün", description: "Yedigün", price: 75, image: heroWaffle, category: "mesrubat" },
-  { id: "mr7", name: "Ice Tea", description: "Şeftali, Limon, Mango", price: 75, image: heroWaffle, category: "mesrubat" },
-  { id: "mr8", name: "7up", description: "Gazoz", price: 75, image: heroWaffle, category: "mesrubat" },
-  { id: "mr9", name: "Meyve Suyu", description: "Şeftali, Vişne, Karışık", price: 75, image: heroWaffle, category: "mesrubat" },
-  { id: "mr10", name: "Ayran", description: "Ayran", price: 75, image: heroWaffle, category: "mesrubat" },
-  { id: "mr11", name: "Portakal Suyu", description: "Taze portakal suyu", price: 99, image: heroWaffle, category: "mesrubat" },
+  { id: "mr1", name: "Su", description: "Su", price: 39, image: lemonade, category: "mesrubat" },
+  { id: "mr2", name: "Soda", description: "Soda", price: 59, image: lemonade, category: "mesrubat" },
+  { id: "mr3", name: "İtalyan Soda", description: "Misket Limon, Çilek, Karadut, Blue Curaçao, Mango, Çarkıfelek Meyvesi", price: 89, image: lemonade, category: "mesrubat" },
+  { id: "mr4", name: "Churchill", description: "Churchill", price: 75, image: lemonade, category: "mesrubat" },
+  { id: "mr5", name: "Pepsi Cola", description: "Pepsi max (sıfır şeker)", price: 75, image: lemonade, category: "mesrubat" },
+  { id: "mr6", name: "Yedigün", description: "Yedigün", price: 75, image: lemonade, category: "mesrubat" },
+  { id: "mr7", name: "Ice Tea", description: "Şeftali, Limon, Mango", price: 75, image: lemonade, category: "mesrubat" },
+  { id: "mr8", name: "7up", description: "Gazoz", price: 75, image: lemonade, category: "mesrubat" },
+  { id: "mr9", name: "Meyve Suyu", description: "Şeftali, Vişne, Karışık", price: 75, image: lemonade, category: "mesrubat" },
+  { id: "mr10", name: "Ayran", description: "Ayran", price: 75, image: lemonade, category: "mesrubat" },
+  { id: "mr11", name: "Portakal Suyu", description: "Taze portakal suyu", price: 99, image: lemonade, category: "mesrubat" },
   { id: "mr12", name: "Limonata", description: "Ev yapımı limonata", price: 89, image: lemonade, category: "mesrubat" },
   { id: "mr13", name: "Çilekli Limonata", description: "Çilekli limonata", price: 95, image: lemonade, category: "mesrubat" },
   { id: "mr14", name: "Mango Peach Limonata", description: "Mango şeftalili limonata", price: 95, image: lemonade, category: "mesrubat" },
