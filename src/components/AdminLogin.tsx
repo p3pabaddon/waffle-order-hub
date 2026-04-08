@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Lock, Eye, EyeOff, Mail, KeyRound } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -15,31 +15,27 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
   const [showPin, setShowPin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [adminPin, setAdminPin] = useState("1234");
 
-  // Fetch configurable PIN from settings
-  useEffect(() => {
-    const fetchPin = async () => {
-      const { data } = await supabase
-        .from("settings")
-        .select("value")
-        .eq("key", "admin_pin")
-        .single();
-      if (data?.value) setAdminPin(data.value);
-    };
-    fetchPin();
-  }, []);
-
-  const handlePinSubmit = (e: React.FormEvent) => {
+  const handlePinSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (pin === adminPin) {
-      sessionStorage.setItem("cafe-admin-auth", "true");
-      onLogin();
-    } else {
-      setError("Yanlış PIN kodu. Tekrar deneyin.");
-      setTimeout(() => setError(""), 2000);
-      setPin("");
+    setLoading(true);
+    setError("");
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke("verify-pin", {
+        body: { pin },
+      });
+      if (fnError || !data?.valid) {
+        setError("Yanlış PIN kodu. Tekrar deneyin.");
+        setTimeout(() => setError(""), 2000);
+        setPin("");
+      } else {
+        sessionStorage.setItem("cafe-admin-auth", "true");
+        onLogin();
+      }
+    } catch {
+      setError("Bir hata oluştu. Tekrar deneyin.");
     }
+    setLoading(false);
   };
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
@@ -52,7 +48,7 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
         password,
       });
       if (authError) {
-        setError(authError.message === "Invalid login credentials" ? "Geçersiz e-posta veya şifre." : authError.message);
+        setError(authError.message === "Invalid login credentials" ? "Geçersiz e-posta veya şifre." : "Giriş başarısız.");
         setLoading(false);
         return;
       }
@@ -62,34 +58,6 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
       }
     } catch {
       setError("Bir hata oluştu. Tekrar deneyin.");
-    }
-    setLoading(false);
-  };
-
-  const handleRegister = async () => {
-    if (!email || !password) {
-      setError("E-posta ve şifre gereklidir.");
-      return;
-    }
-    setLoading(true);
-    setError("");
-    const { error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-    if (signUpError) {
-      setError(signUpError.message);
-    } else {
-      // Auto-confirm is enabled, so sign in right away
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-      if (signInError) {
-        setError("Kayıt başarılı. Giriş yapabilirsiniz.");
-      } else if (data.user) {
-        // Assign staff role
-        await supabase.from("user_roles").insert({ user_id: data.user.id, role: "staff" as any });
-        sessionStorage.setItem("cafe-admin-auth", "true");
-        onLogin();
-      }
     }
     setLoading(false);
   };
@@ -150,10 +118,15 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
 
             <button
               type="submit"
-              disabled={pin.length < 4}
+              disabled={pin.length < 4 || loading}
               className="w-full gradient-warm text-primary-foreground font-heading font-bold py-4 rounded-xl hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-40"
             >
-              Giriş Yap
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                  Doğrulanıyor...
+                </span>
+              ) : "Giriş Yap"}
             </button>
           </form>
         ) : (
@@ -197,20 +170,11 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
                 </span>
               ) : "Giriş Yap"}
             </button>
-
-            <button
-              type="button"
-              onClick={handleRegister}
-              disabled={loading}
-              className="w-full bg-muted text-foreground font-heading font-medium py-3 rounded-xl hover:bg-secondary transition-colors text-sm"
-            >
-              Yeni Personel Kaydı
-            </button>
           </form>
         )}
 
         <p className="text-muted-foreground text-xs text-center mt-6">
-          {mode === "pin" ? "Varsayılan PIN: 1234" : "Personel e-postanız ile giriş yapın"}
+          {mode === "pin" ? "Yönetici PIN kodunu girin" : "Personel e-postanız ile giriş yapın"}
         </p>
       </div>
     </div>
